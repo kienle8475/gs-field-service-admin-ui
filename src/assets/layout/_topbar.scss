@@ -6,15 +6,22 @@
     top: 0;
     width: 100%;
     padding: 0 2rem;
-    background-color: var(--surface-card);
+    background-color: var(--secondary-color);
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;
+    color: rgb(56, 43, 43);
 
     .layout-topbar-logo-container {
-        width: 20rem;
+        width: 40rem;
         display: flex;
         align-items: center;
+
+        span {
+            font-weight: 700;
+            font-size: medium;
+            color: white;
+        }
     }
 
     .layout-topbar-logo {
@@ -22,11 +29,11 @@
         align-items: center;
         font-size: 1.5rem;
         border-radius: var(--content-border-radius);
-        color: var(--text-color);
+        color: white;
         font-weight: 500;
         gap: 0.5rem;
 
-        svg {
+        img {
             width: 3rem;
         }
 
@@ -39,16 +46,15 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        color: var(--text-color-secondary);
         border-radius: 50%;
         width: 2.5rem;
         height: 2.5rem;
-        color: var(--text-color);
+        color: white;
         transition: background-color var(--element-transition-duration);
         cursor: pointer;
 
         &:hover {
-            background-color: var(--surface-hover);
+            background-color: #c2c2c248;
         }
 
         &:focus-visible {
@@ -101,6 +107,7 @@
 
         .layout-topbar-logo-container {
             width: auto;
+            
         }
 
         .layout-menu-button {

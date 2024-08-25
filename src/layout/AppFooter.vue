@@ -2,7 +2,7 @@
 
 <template>
     <div class="layout-footer">
-        SAKAI by
-        <a href="https://primevue.org" target="_blank" rel="noopener noreferrer" class="text-primary font-bold hover:underline">PrimeVue</a>
+        Field Work Management System by
+        <a href="" target="_blank" rel="noopener noreferrer" class="text-primary font-bold hover:underline">NeXT Community</a>
     </div>
 </template>

@@ -9,6 +9,51 @@ const router = createRouter({
             component: AppLayout,
             children: [
                 {
+                    path: '/fms/report/attendance',
+                    name: 'attendance',
+                    component: () => import('@/views/pages/fms/reports/ReportAttendance.vue')
+                },
+                {
+                    path: '/fms/report/oos',
+                    name: 'oos',
+                    component: () => import('@/views/pages/fms/reports/ReportOOS.vue')
+                },
+                {
+                    path: '/fms/report/sale-out',
+                    name: 'sale-out',
+                    component: () => import('@/views/pages/fms/reports/ReportSaleout.vue')
+                },
+                {
+                    path: '/fms/report/customer',
+                    name: 'customer',
+                    component: () => import('@/views/pages/fms/reports/ReportCustomer.vue')
+                },
+                {
+                    path: '/fms/report/images',
+                    name: 'images',
+                    component: () => import('@/views/pages/fms/reports/ReportImage.vue')
+                },
+                {
+                    path: '/fms/report/attendance',
+                    name: 'attendance',
+                    component: () => import('@/views/pages/fms/reports/ReportAttendance.vue')
+                },
+                {
+                    path: '/fms/config/users',
+                    name: 'users',
+                    component: () => import('@/views/pages/fms/configs/Users.vue')
+                },
+                {
+                    path: '/fms/config/locations',
+                    name: 'locations',
+                    component: () => import('@/views/pages/fms/configs/Locations.vue')
+                },
+                {
+                    path: '/fms/config/working-shift',
+                    name: 'working-shift',
+                    component: () => import('@/views/pages/fms/configs/WorkingShift.vue')
+                },
+                {
                     path: '/',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
@@ -104,6 +149,13 @@ const router = createRouter({
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
                 }
+            ]
+        },
+        {
+            path: '/fms',
+            component: AppLayout,
+            children: [
+                
             ]
         },
         {
