@@ -1,9 +1,9 @@
 <script setup>
-import { CustomerService } from '@/service/CustomerService';
-import { ProductService } from '@/service/ProductService';
-import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import { UserService } from '@/service/UserService';
-import { onBeforeMount, reactive, ref } from 'vue';
+import store from '@/store';
+import { useQuery } from '@tanstack/vue-query';
+import axios from 'axios';
+import { isProxy, onBeforeMount, reactive, ref, toRaw } from 'vue';
+const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 const customers1 = ref(null);
 const loading1 = ref(null);
@@ -11,6 +11,32 @@ const products = ref(null);
 const visible = ref(false);
 
 let users = ref(null);
+
+const { isPending, isError, data, error } = useQuery({
+    queryKey: ['list-user'],
+    queryFn: async () => {
+        const res = await axios.get(`${APIUrl}/user/list-user`, {
+            headers: { Authorization: `Bearer ${store.state.accessToken}` }
+        });
+        return res.data;
+    }
+});
+
+// const { error, mutate, reset } = useMutation({
+//   mutationFn: (newTodo) => axios.post('/todos', newTodo),
+// })
+
+// function addTodo() {
+//   mutate({ id: new Date(), title: 'Do Laundry' })
+// }
+
+console.log(isError.value);
+console.log(data.value);
+
+if (isProxy(data.value)) {
+    const rawData = toRaw(data.value);
+    console.log(rawData);
+}
 
 const statuses = reactive(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
 
@@ -46,12 +72,10 @@ function getSeverity(status) {
     }
 }
 
-
 onBeforeMount(() => {
-    users = UserService.getAllUser();
-    console.log(users)
+    // users.value = UserService.getAllUser();
+    // console.log(users);
 });
-
 
 function formatCurrency(value) {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -64,7 +88,6 @@ function formatDate(value) {
         year: 'numeric'
     });
 }
-
 </script>
 
 <template>
@@ -100,13 +123,11 @@ function formatDate(value) {
                     </div>
                     <div class="flex flex-wrap gap-2 basis-1/4">
                         <label for="Role">Role</label>
-                        <Select id="Role" v-model="dropdownItem" :options="dropdownItems" optionLabel="name"
-                            placeholder="Select One" class="w-full"></Select>
+                        <Select id="Role" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"></Select>
                     </div>
                     <div class="flex flex-wrap gap-2 basis-1/4">
                         <label for="status">Trạng thái</label>
-                        <Select id="status" v-model="dropdownItem" :options="dropdownItems" optionLabel="name"
-                            placeholder="Select One" class="w-full"></Select>
+                        <Select id="status" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"></Select>
                     </div>
                     <div class="flex flex-wrap gap-8 basis-1/6">
                         <label for="Search"></label>
@@ -122,8 +143,7 @@ function formatDate(value) {
     </Fluid>
 
     <div class="card">
-        <DataTable :value="customers1" :paginator="true" :rows="10" dataKey="id" :rowHover="true" filterDisplay="menu"
-            :loading="loading1">
+        <DataTable :value="customers1" :paginator="true" :rows="10" dataKey="id" :rowHover="true" filterDisplay="menu" :loading="loading1">
             <!-- <template #header>
                 <div class="flex justify-between">
                     <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
@@ -138,24 +158,18 @@ function formatDate(value) {
             <template #empty> No user found. </template>
             <template #loading> Loading users data. Please wait. </template>
 
-            <Column header="Tài Khoản" :showFilterMatchModes="false"
-                :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+            <Column header="Tài Khoản" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                 <template #body="{ data }">
                     <div class="flex items-center gap-2">
-                        <img :alt="data.representative.name"
-                            :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`"
-                            style="width: 32px" />
+                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
                         <span>{{ data.representative.name }}</span>
                     </div>
                 </template>
                 <template>
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name"
-                        placeholder="Any">
+                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any">
                         <template #option="slotProps">
                             <div class="flex items-center gap-2">
-                                <img :alt="slotProps.option.name"
-                                    :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`"
-                                    style="width: 32px" />
+                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
                                 <span>{{ slotProps.option.name }}</span>
                             </div>
                         </template>
@@ -190,23 +204,18 @@ function formatDate(value) {
                     </Select>
                 </template>
             </Column>
-            <Column header="" field=""  dataType="boolean" bodyClass="text-center"
-                style="min-width: 8rem">
+            <Column header="" field="" dataType="boolean" bodyClass="text-center" style="min-width: 8rem">
                 <template #body="{ data }">
-                    <i class="pi"
-                        :class="{ 'pi-check-circle text-green-500 ': data.verified, 'pi-times-circle text-red-500': !data.verified }"></i>
+                    <i class="pi" :class="{ 'pi-check-circle text-green-500 ': data.verified, 'pi-times-circle text-red-500': !data.verified }"></i>
                 </template>
                 <template>
                     <label for="verified-filter" class="font-bold"> Verified </label>
-                    <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary
-                        inputId="verified-filter" />
+                    <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary inputId="verified-filter" />
                 </template>
             </Column>
         </DataTable>
     </div>
 </template>
 
-<style lang="scss" scoped></style>import { UserService } from '@/service/UserService';
-import { UserService } from '@/service/UserService';
-import { data } from 'autoprefixer';
-
+<style lang="scss" scoped></style>
+import { UserService } from '@/service/UserService'; import { UserService } from '@/service/UserService'; import { data } from 'autoprefixer';
