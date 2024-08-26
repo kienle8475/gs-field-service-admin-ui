@@ -9,12 +9,14 @@
     },
     "dependencies": {
         "@primevue/themes": "^4.0.0",
+        "axios": "^1.7.5",
         "chart.js": "3.3.2",
         "primeicons": "^6.0.1",
         "primevue": "^4.0.0",
         "sakai-vue": "file:",
         "vue": "^3.4.34",
-        "vue-router": "^4.4.0"
+        "vue-router": "^4.4.3",
+        "vuex": "^4.1.0"
     },
     "devDependencies": {
         "@primevue/auto-import-resolver": "^4.0.1",

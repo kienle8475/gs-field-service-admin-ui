@@ -21,7 +21,7 @@ const model = ref([
     {
         label: 'QUÀ TẶNG',
         items: [
-            { label: 'Phân bổ quà tặng', icon: 'pi pi-fw pi-clone', to: '/fms/report/attendance' },
+            { label: 'Phân bổ quà tặng', icon: 'pi pi-fw pi-clone', to: '' },
         ]
     },
     {
