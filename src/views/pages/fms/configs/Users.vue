@@ -1,221 +1,255 @@
 <script setup>
 import store from '@/store';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, useMutation } from '@tanstack/vue-query';
 import axios from 'axios';
-import { isProxy, onBeforeMount, reactive, ref, toRaw } from 'vue';
+import { reactive, ref, toRaw } from 'vue';
+import { useToast } from "primevue/usetoast";
+import { FilterMatchMode } from '@primevue/core/api';
+
+const toast = useToast()
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
-const customers1 = ref(null);
-const loading1 = ref(null);
-const products = ref(null);
-const visible = ref(false);
+const username = ref('');
+const password = ref('');
+const roles = ref(['USER']);
 
-let users = ref(null);
-
-const { isPending, isError, data, error } = useQuery({
-    queryKey: ['list-user'],
-    queryFn: async () => {
-        const res = await axios.get(`${APIUrl}/user/list-user`, {
-            headers: { Authorization: `Bearer ${store.state.accessToken}` }
-        });
-        return res.data;
-    }
-});
-
-// const { error, mutate, reset } = useMutation({
-//   mutationFn: (newTodo) => axios.post('/todos', newTodo),
-// })
-
-// function addTodo() {
-//   mutate({ id: new Date(), title: 'Do Laundry' })
-// }
-
-console.log(isError.value);
-console.log(data.value);
-
-if (isProxy(data.value)) {
-    const rawData = toRaw(data.value);
-    console.log(rawData);
-}
-
-const statuses = reactive(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
-
-const representatives = reactive([
-    { name: 'Amy Elsner', image: 'amyelsner.png' },
-    { name: 'Anna Fali', image: 'annafali.png' },
-    { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-    { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-    { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-    { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-    { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-    { name: 'Onyama Limba', image: 'onyamalimba.png' },
-    { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-    { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-]);
+const roleItems = reactive(['USER', 'DEVELOPER', 'ADMIN']);
 
 function getSeverity(status) {
-    switch (status) {
-        case 'unqualified':
-            return 'danger';
-
-        case 'qualified':
-            return 'success';
-
-        case 'new':
-            return 'info';
-
-        case 'negotiation':
-            return 'warn';
-
-        case 'renewal':
-            return null;
-    }
+  return status ? "success" : "danger"
 }
 
-onBeforeMount(() => {
-    // users.value = UserService.getAllUser();
-    // console.log(users);
+function getUserStatus(status) {
+  return status ? "Kích Hoạt" : "Vô Hiệu Hóa"
+}
+
+const { isPending, isError, data, error, refetch } = useQuery({
+  queryKey: ['list-user'],
+  queryFn: async () => {
+    const res = await axios.get(`${APIUrl}/user/list-user`, {
+      headers: { Authorization: `Bearer ${store.state.accessToken}` }
+    });
+    users.value = res.data?.data;
+    return res.data?.data;
+  },
+
 });
 
-function formatCurrency(value) {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const addUserMutation = useMutation({
+  mutationFn: (newUser) => axios.post(`${APIUrl}/auth/signup`, newUser, { headers: { Authorization: `Bearer ${store.state.accessToken}` } })
+})
+
+const updateUserMutation = useMutation({
+  mutationFn: (params) => axios.put(`${APIUrl}/user/${params.id}/update`, params.body, { headers: { Authorization: `Bearer ${store.state.accessToken}` } })
+})
+
+function addUser() {
+  const newUser = {
+    username: username.value,
+    password: password.value,
+    role: [toRaw(roles).value]
+  }
+  addUserMutation.mutate(newUser, {
+    onSuccess: (data, variables) => {
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+      refetch()
+    }, onError: (err, variables) => {
+
+      toast.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
+    }
+  })
 }
 
-function formatDate(value) {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+const dt = ref();
+const users = ref();
+const userDialog = ref(false);
+const disableUserDialog = ref(false);
+const userSelected = ref({});
+const user = ref({});
+const selectedProducts = ref();
+const isEdit = ref();
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
+const submitted = ref(false);
+
+function formatUTCToDDMMYYYY(utcTimestamp) {
+  const date = new Date(utcTimestamp);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+
+}
+function openNew() {
+  user.value = {};
+  submitted.value = false;
+  userDialog.value = true;
+  isEdit.value = false;
+}
+
+function hideDialog() {
+  userDialog.value = false;
+  submitted.value = false;
+}
+function saveUser() {
+  submitted.value = true;
+  if (!isEdit.value) {
+    addUserMutation.mutate(user.value, {
+      onSuccess: (data, variables) => {
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+        refetch()
+      }, onError: (err, variables) => {
+        toast.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
+      }
+    })
+  } else {
+    const userUpdate = {
+      username: user.value.username,
+      role: user.value.role
+    }
+    updateUserMutation.mutate({ id: user.value._id, body: userUpdate }, {
+    onSuccess: (data, variables) => {
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+      refetch()
+    }, onError: (err, variables) => {
+      toast.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
+    }
+  })
+  }
+  userDialog.value = false;
+  user.value = {};
+}
+
+function editUser(us) {
+  user.value = { ...us };
+  userDialog.value = true;
+  isEdit.value = true;
+}
+
+function confirmDisableUser(user) {
+  userSelected.value = user;
+  disableUserDialog.value = true;
+}
+
+function disableUser() {
+  console.log(userSelected.value._id)
+  updateUserMutation.mutate({ id: userSelected.value._id, body: { is_active: false } }, {
+    onSuccess: (data, variables) => {
+      disableUserDialog.value = false;
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+      refetch()
+    }, onError: (err, variables) => {
+      toast.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
+    }
+  })
+}
+
+function exportCSV() {
+  dt.value.exportCSV();
 }
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '25rem' }">
+  <div>
+    <div class="card">
+      <Toolbar class="mb-6">
+        <template #start>
+          <Button label="Tạo Tài Khoản" icon="pi pi-plus" severity="warn" class="mr-2" @click="openNew" />
+        </template>
+
+        <template #end>
+          <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
+        </template>
+      </Toolbar>
+
+      <DataTable ref="dt" v-model:selection="selectedProducts" :value="users" dataKey="id" :paginator="true" :rows="25"
+        :loading="isPending" :filters="filters"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        :rowsPerPageOptions="[25, 50, 100]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users">
         <template #header>
-            <div class="inline-flex items-center justify-center gap-2">
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-                <span class="font-bold whitespace-nowrap">Amy Elsner</span>
-            </div>
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <h4 class="m-0">Quản lý Tài Khoản</h4>
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value" placeholder="Tìm kiếm..." />
+            </IconField>
+          </div>
         </template>
-        <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
-        <div class="flex items-center gap-4 mb-4">
-            <label for="username" class="font-semibold w-24">Username</label>
-            <InputText id="username" class="flex-auto" autocomplete="off" />
+
+        <!-- <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column> -->
+        <Column field="username" header="Tên Tài Khoản" sortable style="min-width: 12rem"></Column>
+        <Column field="role" header="Vai Trò" sortable style="min-width: 16rem">
+          <template #body="slotProps">
+            <span v-for="item in slotProps.data.role">
+              <Tag :value="item" severity="info" style="margin-right: 1rem;" />
+              <!-- <span v-for="childItem in item.children">
+                        {{ item.message }} {{ childItem }}
+                      </span> -->
+            </span>
+          </template>
+        </Column>
+        <Column field="created_utc" header="Ngày Tạo" sortable style="min-width: 8rem">
+          <template #body="slotProps">
+            {{ formatUTCToDDMMYYYY(slotProps.data.created_utc) }}
+          </template>
+        </Column>
+        <Column field="status" header="Trạng Thái" sortable style="min-width: 12rem">
+          <template #body="slotProps">
+            <Tag :value="getUserStatus(slotProps.data.is_active)" :severity="getSeverity(slotProps.data.is_active)" />
+          </template>
+        </Column>
+        <Column :exportable="false" style="min-width: 12rem">
+          <template #body="slotProps">
+            <Button outlined severity="info" class="mr-2" @click="editUser(slotProps.data)">Cập Nhật</Button>
+            <Button outlined severity="danger" @click="confirmDisableUser(slotProps.data)">Vô Hiệu Hóa</Button>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
+    <Dialog v-model:visible="userDialog" :style="{ width: '450px' }" header="Chi Tiết Tài Khoản" :modal="true">
+      <div class="flex flex-col gap-6">
+        <div>
+          <label for="username" class="block font-bold mb-3">Tài Khoản</label>
+          <InputText id="username" v-model.trim="user.username" required="true" autofocus
+            :invalid="submitted && !user.username" fluid />
+          <small v-if="submitted && !user.username" class="text-red-500">Username is required.</small>
         </div>
-        <div class="flex items-center gap-4 mb-2">
-            <label for="email" class="font-semibold w-24">Email</label>
-            <InputText id="email" class="flex-auto" autocomplete="off" />
+        <div>
+          <label for="password" class="block font-bold mb-3">Mật Khẩu</label>
+          <InputText :disabled="isEdit" id="password" v-model.trim="user.password" required="true" autofocus
+            :invalid="submitted && !user.password" fluid />
+          <small v-if="submitted && !user.password" class="text-red-500">Password is required.</small>
         </div>
-        <template #footer>
-            <Button label="Cancel" text severity="secondary" @click="visible = false" autofocus />
-            <Button label="Save" outlined severity="secondary" @click="visible = false" autofocus />
-        </template>
+        <div>
+          <label for="role" class="block font-bold mb-3">Vai Trò</label>
+          <MultiSelect id="role" v-model="user.role" :options="roleItems" placeholder="Chọn Vai Trò" fluid>
+          </MultiSelect>
+        </div>
+      </div>
+
+      <template #footer>
+        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="Save" icon="pi pi-check" @click="saveUser" />
+      </template>
     </Dialog>
 
-    <Fluid>
-        <div class="card">
-            <div class="flex flex-col gap-4 w-full">
-                <div class="flex flex-row md:flex-row gap-4">
-                    <div class="flex flex-wrap gap-2 basis-1/2">
-                        <label for="username">Tài khoản</label>
-                        <InputText id="username" type="text" />
-                    </div>
-                    <div class="flex flex-wrap gap-2 basis-1/4">
-                        <label for="Role">Role</label>
-                        <Select id="Role" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"></Select>
-                    </div>
-                    <div class="flex flex-wrap gap-2 basis-1/4">
-                        <label for="status">Trạng thái</label>
-                        <Select id="status" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"></Select>
-                    </div>
-                    <div class="flex flex-wrap gap-8 basis-1/6">
-                        <label for="Search"></label>
-                        <Button id="Search" label="Tìm Kiếm"></Button>
-                    </div>
-                    <div class="flex flex-wrap gap-8 basis-1/6">
-                        <label for="AddNew"></label>
-                        <Button id="AddNew" label="Thêm mới" severity="warn" @click="visible = true"></Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </Fluid>
-
-    <div class="card">
-        <DataTable :value="customers1" :paginator="true" :rows="10" dataKey="id" :rowHover="true" filterDisplay="menu" :loading="loading1">
-            <!-- <template #header>
-                <div class="flex justify-between">
-                    <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
-                    <IconField>
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
-                    </IconField>
-                </div>
-            </template> -->
-            <template #empty> No user found. </template>
-            <template #loading> Loading users data. Please wait. </template>
-
-            <Column header="Tài Khoản" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
-                <template #body="{ data }">
-                    <div class="flex items-center gap-2">
-                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
-                        <span>{{ data.representative.name }}</span>
-                    </div>
-                </template>
-                <template>
-                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any">
-                        <template #option="slotProps">
-                            <div class="flex items-center gap-2">
-                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
-                                <span>{{ slotProps.option.name }}</span>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </template>
-            </Column>
-            <Column header="Vai Trò" dataType="date" style="min-width: 10rem">
-                <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template>
-                    <DatePicker v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
-                </template>
-            </Column>
-            <Column header="Ngày Tạo" dataType="date" style="min-width: 10rem">
-                <template #body="{ data }">
-                    {{ formatDate(data.date) }}
-                </template>
-                <template>
-                    <DatePicker v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
-                </template>
-            </Column>
-            <Column header="Trạng Thái" field="status" :filterMenuStyle="{ width: '14rem' }" style="min-width: 12rem">
-                <template #body="{ data }">
-                    <Tag :value="data.status" :severity="getSeverity(data.status)" />
-                </template>
-                <template>
-                    <Select v-model="filterModel.value" :options="statuses" placeholder="Select One" showClear>
-                        <template #option="slotProps">
-                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
-                        </template>
-                    </Select>
-                </template>
-            </Column>
-            <Column header="" field="" dataType="boolean" bodyClass="text-center" style="min-width: 8rem">
-                <template #body="{ data }">
-                    <i class="pi" :class="{ 'pi-check-circle text-green-500 ': data.verified, 'pi-times-circle text-red-500': !data.verified }"></i>
-                </template>
-                <template>
-                    <label for="verified-filter" class="font-bold"> Verified </label>
-                    <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary inputId="verified-filter" />
-                </template>
-            </Column>
-        </DataTable>
-    </div>
+    <Dialog v-model:visible="disableUserDialog" :style="{ width: '450px' }" header="Xác Nhận" :modal="true">
+      <div class="flex items-center gap-4">
+        <i class="pi pi-exclamation-triangle !text-3xl" />
+        <span v-if="userSelected">Bạn muốn vô hiệu hóa tài khoản <b>{{ userSelected.username }}</b>?</span>
+      </div>
+      <template #footer>
+        <Button label="Hủy" icon="pi pi-times" severity="info" @click="disableUserDialog = false" />
+        <Button label="Xác nhận" icon="pi pi-check" severity="danger" @click="disableUser" />
+      </template>
+    </Dialog>
+  </div>
 </template>
 
+
 <style lang="scss" scoped></style>
-import { UserService } from '@/service/UserService'; import { UserService } from '@/service/UserService'; import { data } from 'autoprefixer';

@@ -5,7 +5,7 @@ import Aura from '@primevue/themes/aura';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
-import { VueQueryPlugin } from '@tanstack/vue-query';
+import { VueQueryPlugin, QueryClient, VUE_QUERY_CLIENT } from '@tanstack/vue-query';
 
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
@@ -13,6 +13,15 @@ import '@/assets/tailwind.css';
 import store from './store';
 
 const app = createApp(App);
+
+export const queryClient = {
+    install: (app, options) => {
+      const queryClient = new QueryClient(options);
+      app.provide(VUE_QUERY_CLIENT, queryClient)
+    }
+}
+app.use(VueQueryPlugin);
+app.use(queryClient);
 
 app.use(PrimeVue, {
     theme: {
@@ -24,7 +33,6 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.use(ConfirmationService);
-app.use(VueQueryPlugin);
 
 app.use(router);
 app.use(store);
