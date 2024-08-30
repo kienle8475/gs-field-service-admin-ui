@@ -29,6 +29,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/fms/reports/ReportCustomer.vue')
                 },
                 {
+                    path: '/fms/report/sampling',
+                    name: 'sampling',
+                    component: () => import('@/views/pages/fms/reports/ReportSampling.vue')
+                },
+                {
                     path: '/fms/report/images',
                     name: 'images',
                     component: () => import('@/views/pages/fms/reports/ReportImage.vue')
@@ -52,6 +57,11 @@ const router = createRouter({
                     path: '/fms/config/working-shift',
                     name: 'working-shift',
                     component: () => import('@/views/pages/fms/configs/WorkingShift.vue')
+                },
+                {
+                    path: '/fms/config/gift',
+                    name: 'gift-config',
+                    component: () => import('@/views/pages/fms/configs/GiftConfig.vue')
                 },
                 {
                     path: '/',

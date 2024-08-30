@@ -12,24 +12,21 @@ const model = ref([
         label: 'BÁO CÁO',
         items: [
             { label: 'Báo cáo chấm công', icon: 'pi pi-fw pi-sign-in', to: '/fms/report/attendance'},
-            { label: 'Báo cáo OOS', icon: 'pi pi-fw pi-inbox', to: '/fms/report/oos'},
-            { label: 'Báo cáo bán hàng', icon: 'pi pi-fw pi-shopping-cart', to: '/fms/report/sale-out'},
-            { label: 'Báo cáo tặng quà', icon: 'pi pi-fw pi-ticket', to: '/fms/report/customer'},
             { label: 'Báo cáo hình ảnh', icon: 'pi pi-fw pi-image', to: '/fms/report/images'},
-        ]
-    },
-    {
-        label: 'QUÀ TẶNG',
-        items: [
-            { label: 'Phân bổ quà tặng', icon: 'pi pi-fw pi-clone', to: '' },
+            { label: 'Báo cáo tặng quà', icon: 'pi pi-fw pi-gift', to: '/fms/report/customer'},
+            { label: 'Báo cáo sampling', icon: 'pi pi-fw pi-ticket', to: '/fms/report/sampling'},
+            { label: 'Báo cáo bán hàng', icon: 'pi pi-fw pi-shopping-cart', to: '/fms/report/sale-out'},
+            { label: 'Báo cáo OOS', icon: 'pi pi-fw pi-inbox', to: '/fms/report/oos'},
+
         ]
     },
     {
         label: 'CẤU HÌNH',
         items: [
-            { label: 'Tài khoản', icon: 'pi pi-fw pi-user', to: '/fms/config/users' },
+            { label: 'Phân bổ quà tặng', icon: 'pi pi-fw pi-clone', to: '/fms/config/gift' },
             { label: 'Địa điểm làm việc', icon: 'pi pi-fw pi-map-marker', to: '/fms/config/locations' },
             { label: 'Ca làm', icon: 'pi pi-fw pi-calendar', to: '/fms/config/working-shift' },
+            { label: 'Tài khoản', icon: 'pi pi-fw pi-user', to: '/fms/config/users' },
         ]
     },
     // {

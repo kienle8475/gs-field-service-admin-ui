@@ -10,7 +10,7 @@
             </template>
         </Toolbar>
         <!-- <headers>BÁO CÁO CHẤM CÔNG</headers> -->
-        <DataTable v-model:expandedRows="expandedRows" :value="shifts" dataKey="_id" @rowExpand="onRowExpand"
+        <DataTable ref="dt" v-model:expandedRows="expandedRows" :value="shifts" dataKey="_id" @rowExpand="onRowExpand"
             @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem">
             <template #header>
                 <div class="flex flex-wrap justify-end gap-2">
@@ -50,27 +50,25 @@
                 <div class="p-4">
                     <h5>Báo cáo check in {{ slotProps.data.name }}</h5>
                     <DataTable :value="slotProps.data.working_shifts" stripedRows>
-                        <Column field="user.username" header="Tài Khoản" sortable></Column>
-                        <Column field="check_in.time_utc" header="Giờ Check In" sortable>
+                        <Column field="user.username" header="Tài Khoản"></Column>
+                        <Column field="check_in.time_utc" header="Giờ Check In">
                             <template #body="slotProps">
-                                {{ formatUTC7Time(slotProps.data.check_in.time_utc) }}
+                                {{ formatUTC7Time(slotProps.data.check_in?.time_utc) }}
                             </template>
                         </Column>
-                        <Column field="check_out.time_utc" header="Giờ Check Out" sortable>
+                        <Column field="check_out.time_utc" header="Giờ Check Out">
                             <template #body="slotProps">
-                                {{ formatUTC7Time(slotProps.data.check_out.time_utc) }}
+                                {{ formatUTC7Time(slotProps.data.check_out?.time_utc) }}
                             </template>
                         </Column>
-                        <Column field="check_in.image_url" header="Ảnh Check In" sortable>
+                        <Column field="check_in.image_url" header="Ảnh Check In">
                             <template #body="slotProps">
-                                <img :src="slotProps.data.check_in.image_url" class="shadow-lg" width="64"
-                                    alt="Services">
+                                <img :src="slotProps.data.check_in?.image_url" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="check_out.image_url" header="Ảnh Check Out" sortable>
+                        <Column field="check_out.image_url" header="Ảnh Check Out">
                             <template #body="slotProps">
-                                <img :src="slotProps.data.check_out.image_url" class="shadow-lg" width="64"
-                                    alt="Services">
+                                <img :src="slotProps.data.check_out?.image_url" class="shadow-lg" width="64">
                             </template>
                         </Column>
                     </DataTable>
@@ -94,6 +92,8 @@ const expandedRows = ref({});
 const toast = useToast();
 const shifts = ref();
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
+const dt = ref();
+
 
 const onRowExpand = (event) => {
     // toast.add({ severity: 'info', summary: 'Expanded', detail: event.data.name, life: 3000 });
@@ -116,7 +116,8 @@ const getSeverity = (session) => {
 };
 
 function formatUTC7Time(utcTimestamp) {
-    const utc7Timestamp = moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss');
+ 
+    const utc7Timestamp = utcTimestamp?moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss'):"";
     return utc7Timestamp;
 }
 
@@ -136,6 +137,7 @@ const { isPending, isError, data, error, refetch } = useQuery({
             headers: { Authorization: `Bearer ${store.state.accessToken}` }
         });
         shifts.value = res.data?.data;
+        console.log(shifts)
         return res.data?.data;
     },
 
@@ -148,5 +150,10 @@ function getShiftStatus(shifts) {
 function getShiftSeverity(shifts) {
     return shifts.length > 0 ? "info" : "danger"
 }
+
+function exportCSV() {
+  dt.value.exportCSV();
+}
+
 
 </script>

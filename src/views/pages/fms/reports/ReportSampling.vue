@@ -2,11 +2,11 @@
     <div class="card">
         <Toolbar class="mb-6">
             <template #start>
-                <Tag severity="secondary">BÁO CÁO TẶNG QUÀ</Tag>
+                <Tag severity="secondary">BÁO CÁO TẶNG QUÀ SAMPLING</Tag>
             </template>
 
             <template #end>
-                <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
+                <Button label="Export" icon="pi pi-upload" severity="primary" @click="" />
             </template>
         </Toolbar>
         <!-- <headers>BÁO CÁO TẶNG QUÀ</headers> -->
@@ -35,38 +35,23 @@
                 <div class="p-4">
                     <h5>Báo cáo tặng quà {{ slotProps.data.store }}</h5>
                     <DataTable :value="slotProps.data.gifts" :loading="isPending">
-                        <Column field="bill_id" header="Mã Bill"></Column>
                         <Column field="customer_name" header="Tên Khách Hàng"></Column>
                         <Column field="customer_phone" header="Số Điện Thoại"></Column>
-                        <Column field="gift_type" header="Loại Quà">
+                        <Column field="sampling_type" header="Hoạt Động">
                             <template #body="slotProps">
-                                <Tag :value="slotProps.data.gift_type"
-                                    :severity="getGiftSeverity(slotProps.data.gift_type)" />
+                                <Tag :value="slotProps.data.sampling_type"
+                                    :severity="getGiftSeverity(slotProps.data.sampling_type)" />
                             </template>
                         </Column>
-                        <Column field="products" header="Sản Phẩm">
-                            <template #body="slotProps">
-                                <DataTable :value="slotProps.data.products" stripedRows header>
-                                    <Column field="name"></Column>
-                                    <Column field="count">
-                                        <template #body="slotProps">
-                                            <Tag :value="slotProps.data.count"
-                                                :severity="getGiftCountSeverity(slotProps.data.count)" />
-                                        </template>
-                                    </Column>
-                                </DataTable>
-                            </template>
-                        </Column>
-                        <Column field="gift_scheme" header="Scheme Quà"></Column>
-                        <Column field="reward_gift" header="Quà"></Column>
-                        <Column field="bill_image_url" header="Hình Ảnh Bill">
-                            <template #body="slotProps">
-                                <img :src="slotProps.data.bill_image_url" class="shadow-lg" width="64" alt="Services">
-                            </template>
-                        </Column>
+                        <Column field="reward_gift" header="Quà Tặng"></Column>
                         <Column field="creward_image_url" header="Hình Ảnh Khách Nhận Quầ">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.reward_image_url" class="shadow-lg" width="64" alt="Services">
+                            </template>
+                        </Column>
+                        <Column field="bill_image_url" header="Hình Ảnh Post Bài">
+                            <template #body="slotProps">
+                                <img :src="slotProps.data?.post_social_image_url" class="shadow-lg" width="64" >
                             </template>
                         </Column>
                     </DataTable>
@@ -133,7 +118,7 @@ function transformData(dt) {
         if (item.working_shifts.length > 0) {
             let giftitems = [];
             item.working_shifts.forEach((ws) => {
-                giftitems = giftitems.concat(ws.report_gifts);
+                giftitems = giftitems.concat(ws.report_samplings);
             })
             if(giftitems.length > 0 ){
                 const d = {
@@ -166,11 +151,10 @@ const getSeverity = (session) => {
 
 const getGiftSeverity = (type) => {
     switch (type) {
-        case 'INSTANT_GIFT':
-            return 'info';
-
-        case 'LUCKY_WHEEL':
-            return 'warn';
+        case 'POST_SOCIAL_HASHTAG':
+            return 'info'
+        case 'CATCH_YOUR_SPARKLING':
+            return 'success';
 
         default:
             return null;

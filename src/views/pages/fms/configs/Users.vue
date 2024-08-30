@@ -9,15 +9,19 @@ import { FilterMatchMode } from '@primevue/core/api';
 const toast = useToast()
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
-const username = ref('');
-const password = ref('');
-const roles = ref(['USER']);
-
 const roleItems = reactive(['USER', 'DEVELOPER', 'ADMIN']);
 
-function getSeverity(status) {
-  return status ? "success" : "danger"
-}
+const dt = ref();
+const users = ref();
+const userDialog = ref(false);
+const disableUserDialog = ref(false);
+const submitted = ref(false);
+
+const userSelected = ref({});
+const user = ref({});
+const selectedProducts = ref();
+const isEdit = ref();
+
 
 function getUserStatus(status) {
   return status ? "Kích Hoạt" : "Vô Hiệu Hóa"
@@ -43,36 +47,9 @@ const updateUserMutation = useMutation({
   mutationFn: (params) => axios.put(`${APIUrl}/user/${params.id}/update`, params.body, { headers: { Authorization: `Bearer ${store.state.accessToken}` } })
 })
 
-function addUser() {
-  const newUser = {
-    username: username.value,
-    password: password.value,
-    role: [toRaw(roles).value]
-  }
-  addUserMutation.mutate(newUser, {
-    onSuccess: (data, variables) => {
-      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
-      refetch()
-    }, onError: (err, variables) => {
-
-      toast.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
-    }
-  })
-}
-
-const dt = ref();
-const users = ref();
-const userDialog = ref(false);
-const disableUserDialog = ref(false);
-const userSelected = ref({});
-const user = ref({});
-const selectedProducts = ref();
-const isEdit = ref();
-
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
-const submitted = ref(false);
 
 function formatUTCToDDMMYYYY(utcTimestamp) {
   const date = new Date(utcTimestamp);
@@ -82,6 +59,7 @@ function formatUTCToDDMMYYYY(utcTimestamp) {
   return `${day}/${month}/${year}`;
 
 }
+
 function openNew() {
   user.value = {};
   submitted.value = false;
@@ -93,6 +71,7 @@ function hideDialog() {
   userDialog.value = false;
   submitted.value = false;
 }
+
 function saveUser() {
   submitted.value = true;
   if (!isEdit.value) {
@@ -149,6 +128,11 @@ function disableUser() {
 function exportCSV() {
   dt.value.exportCSV();
 }
+
+function getSeverity(status) {
+  return status ? "success" : "danger"
+}
+
 </script>
 
 <template>
