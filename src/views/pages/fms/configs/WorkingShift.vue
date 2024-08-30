@@ -282,4 +282,10 @@ function hideDialog() {
 }
 
 
-</script>import { values } from 'lodash';
+</script>
+
+<style>
+.p-datatable-header-cell{
+    background-color: #ffeebc !important;
+}
+</style>

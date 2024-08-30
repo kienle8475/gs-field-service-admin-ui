@@ -23,7 +23,7 @@ const model = ref([
     {
         label: 'CẤU HÌNH',
         items: [
-            { label: 'Phân bổ quà tặng', icon: 'pi pi-fw pi-clone', to: '/fms/config/gift' },
+            { label: 'Cài đặt quà vòng quay ', icon: 'pi pi-fw pi-clone', to: '/fms/config/gift' },
             { label: 'Địa điểm làm việc', icon: 'pi pi-fw pi-map-marker', to: '/fms/config/locations' },
             { label: 'Ca làm', icon: 'pi pi-fw pi-calendar', to: '/fms/config/working-shift' },
             { label: 'Tài khoản', icon: 'pi pi-fw pi-user', to: '/fms/config/users' },

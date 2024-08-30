@@ -98,6 +98,7 @@ const dt = ref();
 const onRowExpand = (event) => {
     // toast.add({ severity: 'info', summary: 'Expanded', detail: event.data.name, life: 3000 });
 };
+
 const onRowCollapse = (event) => {
     // toast.add({ severity: 'success', summary: 'Collapsed', detail: event.data.name, life: 3000 });
 };
@@ -116,8 +117,8 @@ const getSeverity = (session) => {
 };
 
 function formatUTC7Time(utcTimestamp) {
- 
-    const utc7Timestamp = utcTimestamp?moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss'):"";
+
+    const utc7Timestamp = utcTimestamp ? moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss') : "";
     return utc7Timestamp;
 }
 
@@ -144,7 +145,7 @@ const { isPending, isError, data, error, refetch } = useQuery({
 });
 
 function getShiftStatus(shifts) {
-    return shifts.length > 0 ? "Đã Check In" : "Chưa Check In"
+    return shifts.length > 0 ? "ĐÃ CHECK IN" : "CHƯA CHECK IN"
 }
 
 function getShiftSeverity(shifts) {
@@ -152,8 +153,13 @@ function getShiftSeverity(shifts) {
 }
 
 function exportCSV() {
-  dt.value.exportCSV();
+    dt.value.exportCSV();
 }
 
-
 </script>
+
+<style>
+.p-datatable-header-cell {
+    background-color: #ffeebc !important;
+}
+</style>

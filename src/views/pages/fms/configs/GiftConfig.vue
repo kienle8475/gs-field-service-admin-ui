@@ -61,10 +61,10 @@ const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 
 const columns = [
-    { field: 'STRONGBOW_STRING_BAG', header: 'STRONGBOW_STRING_BAG' },
-    { field: 'STRONGBOW_TUMBLER_45CL', header: 'STRONGBOW_TUMBLER_45CL' },
-    { field: 'STRONGBOW_ICE_BUCKET_PLASTIC_8L', header: 'STRONGBOW_ICE_BUCKET_PLASTIC_8L' },
-    { field: 'STRONGBOW_TROLLEY', header: 'STRONGBOW_TROLLEY' }
+    { field: 'STRONGBOW_STRING_BAG', header: 'Túi STRONGBOW' },
+    { field: 'STRONGBOW_TUMBLER_45CL', header: 'Ly STRONGBOW ' },
+    { field: 'STRONGBOW_ICE_BUCKET_PLASTIC_8L', header: 'Thùng đá STRONGBOW plastic 8L' },
+    { field: 'STRONGBOW_TROLLEY', header: 'Vali STRONGBOW' }
 ];
 
 const { isPending: loadingStatus, isError, data, error, refetch } = useQuery({
