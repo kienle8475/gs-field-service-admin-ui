@@ -11,7 +11,7 @@
         </Toolbar>
         <!-- <headers>BÁO CÁO CHẤM CÔNG</headers> -->
         <DataTable ref="dt" v-model:expandedRows="expandedRows" :value="shifts" dataKey="_id" @rowExpand="onRowExpand"
-            @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem">
+            @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem" :loading="isPending">
             <template #header>
                 <div class="flex flex-wrap justify-end gap-2">
                     <!-- <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
@@ -80,6 +80,7 @@
 </template>
 
 
+
 <script setup>
 import store from '@/store';
 import { useQuery, useMutation } from '@tanstack/vue-query';
@@ -93,8 +94,6 @@ const toast = useToast();
 const shifts = ref();
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 const dt = ref();
-
-
 const onRowExpand = (event) => {
     // toast.add({ severity: 'info', summary: 'Expanded', detail: event.data.name, life: 3000 });
 };

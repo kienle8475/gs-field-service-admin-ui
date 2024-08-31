@@ -44,7 +44,7 @@
                             </template>
                         </Column>
                         <Column field="reward_gift" header="Quà Tặng"></Column>
-                        <Column field="creward_image_url" header="Hình Ảnh Khách Nhận Quầ">
+                        <Column field="creward_image_url" header="Hình Ảnh Khách Nhận Quà">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.reward_image_url" class="shadow-lg" width="64" alt="Services">
                             </template>
@@ -83,7 +83,6 @@ const { isPending, isError, data, error, refetch } = useQuery({
             headers: { Authorization: `Bearer ${store.state.accessToken}` }
         });
         shifts.value = res.data?.data;
-        console.log(shifts.value)
         return res.data?.data;
     },
 
@@ -133,7 +132,6 @@ function transformData(dt) {
             }
         }
     })
-    console.log(shiftstrans.value)
 }
 
 const getSeverity = (session) => {

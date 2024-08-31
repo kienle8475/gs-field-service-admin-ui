@@ -8,7 +8,7 @@
                 <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
             </template>
         </Toolbar>
-        <DataTable ref="dt" v-model:expandedRows="expandedRows" :value="shiftstrans" dataKey="id"
+        <DataTable ref="dt" v-model:expandedRows="expandedRows" :value="shiftstrans" dataKey="id" :loading="isPending"
             @rowExpand="onRowExpand" @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem">
             <template #header>
                 <div class="flex flex-wrap justify-end gap-2">
@@ -54,42 +54,42 @@
                             </Row>
                         </ColumnGroup>
                         <Column field="user"></Column>
-                        <Column field="posm_in_1" header="Ảnh Check Out">
+                        <Column field="posm_in_1">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_in_1" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="posm_in_2" header="Ảnh Check Out">
+                        <Column field="posm_in_2">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_in_2" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="posm_in_3" header="Ảnh Check Out">
+                        <Column field="posm_in_3">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_in_3" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="report_in" header="Ảnh Check Out">
+                        <Column field="report_in">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.report_in" class="shadow-lg" width="64">
                             </template>
-                        </Column>
-                        <Column field="posm_out_1" header="Ảnh Check Out">
+                        </Column>   
+                        <Column field="posm_out_1">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_out_1" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="posm_out_2" header="Ảnh Check Out">
+                        <Column field="posm_out_2">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_out_2" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="posm_out_3" header="Ảnh Check Out">
+                        <Column field="posm_out_3">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.posm_out_3" class="shadow-lg" width="64">
                             </template>
                         </Column>
-                        <Column field="report_out" header="Ảnh Check Out">
+                        <Column field="report_out">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.report_out" class="shadow-lg" width="64">
                             </template>
@@ -178,7 +178,6 @@ function formatUTCToDDMMYYYY(utcTimestamp) {
 
 watch(shifts, (newData) => {
     shiftstrans.value = transformData(shifts.value);
-    console.log(shiftstrans.value)
 })
 
 

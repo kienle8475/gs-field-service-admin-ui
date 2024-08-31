@@ -10,7 +10,7 @@
         </Toolbar>
 
         <DataTable :value="store_shifts" sortMode="single" :sortOrder="1" :loading="loadingStatus"
-            tableStyle="min-width: 50rem" :paginator="true" :rows="25"
+            tableStyle="min-width: 50rem" :paginator="true" :rows="25" 
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[25, 50, 100]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} outlets">
@@ -76,44 +76,6 @@
                     </div>
                 </div>
             </div>
-            <!-- <<div>
-          <label for="outletname" class="block font-bold mb-3">Tên Outlet</label>
-          <InputText id="outletname" v-model="outlet.name" required="true" autofocus
-            :invalid="submitted && !outlet.name" fluid />
-          <small v-if="submitted && !outlet.name" class="text-red-500">Outlet Name is required.</small>
-        </div>
-        <div>
-          <label for="outletaddress" class="block font-bold mb-3">Địa Chỉ</label>
-          <InputText id="outletaddress" v-model="outlet.address" required="true" autofocus
-            :invalid="submitted && !outlet.address" fluid />
-          <small v-if="submitted && !outlet.address" class="text-red-500">Outlet Address is required.</small>
-        </div>
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-wrap gap-4">
-            <div class="flex flex-col grow basis-0">
-              <label for="lat" class="block font-bold mb-3">Kinh Độ</label>
-              <InputText id="lat" type="number" v-model.number="gps.lat"/>
-            </div>
-            <div class="flex flex-col grow basis-0">
-              <label for="lng" class="block font-bold mb-3">Vĩ Độ</label>
-              <InputText id="lng" type="number" v-model.number="gps.lng"/>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-wrap gap-4">
-            <div class="flex flex-col grow basis-0">
-              <label for="radius" class="block font-bold mb-3">Bán Kính Checkin Cho Phép</label>
-              <InputText type="number" id="radius" v-model.number="gps.radius" required="true" autofocus
-              :invalid="submitted && !gps.radius" fluid />
-            </div>
-            <div class="flex flex-col grow basis-0">
-              <label for="outlettype" class="block font-bold mb-3">Loại Outlet</label>
-            <Select v-model="outlet.type" :options="outletTypeItems" optionLabel="name" optionValue="code" placeholder="Chọn Loại Outlet"
-              class="w-full" />
-            </div>
-          </div>
-        </div> -->
         </div>
 
         <template #footer>

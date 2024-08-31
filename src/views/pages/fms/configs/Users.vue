@@ -113,7 +113,6 @@ function confirmDisableUser(user) {
 }
 
 function disableUser() {
-  console.log(userSelected.value._id)
   updateUserMutation.mutate({ id: userSelected.value._id, body: { is_active: false } }, {
     onSuccess: (data, variables) => {
       disableUserDialog.value = false;

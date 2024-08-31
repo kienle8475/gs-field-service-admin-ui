@@ -133,7 +133,6 @@ const { isPending: loadingStatus, isError, data, error, refetch } = useQuery({
       headers: { Authorization: `Bearer ${store.state.accessToken}` }
     });
     outlets.value = res.data?.data;
-    console.log(outlets.value)
     return res.data?.data;
   },
 
@@ -146,7 +145,6 @@ const provinceQuery = useQuery({
       headers: { Authorization: `Bearer ${store.state.accessToken}` }
     });
     provinces.value = res.data?.data;
-    console.log(provinces.value)
     return res.data?.data;
   },
 

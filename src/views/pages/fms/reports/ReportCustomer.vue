@@ -10,7 +10,7 @@
             </template>
         </Toolbar>
         <!-- <headers>BÁO CÁO TẶNG QUÀ</headers> -->
-        <DataTable v-model:expandedRows="expandedRows" :value="shiftstrans" dataKey="id" @rowExpand="onRowExpand"
+        <DataTable v-model:expandedRows="expandedRows" :value="shiftstrans" dataKey="id" @rowExpand="onRowExpand" :loading="isPending"
             @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem">
             <template #header>
                 <div class="flex flex-wrap justify-end gap-2">
@@ -64,7 +64,7 @@
                                 <img :src="slotProps.data.bill_image_url" class="shadow-lg" width="64" alt="Services">
                             </template>
                         </Column>
-                        <Column field="creward_image_url" header="Hình Ảnh Khách Nhận Quầ">
+                        <Column field="creward_image_url" header="Hình Ảnh Khách Nhận Quà">
                             <template #body="slotProps">
                                 <img :src="slotProps.data.reward_image_url" class="shadow-lg" width="64" alt="Services">
                             </template>
@@ -143,12 +143,10 @@ function transformData(dt) {
                 store: item.store.name,
                 gifts: giftitems
             }
-            // console.log(item._id)
             shiftstrans.value.push(d)
             }
         }
     })
-    console.log(shiftstrans.value)
 }
 
 const getSeverity = (session) => {
