@@ -147,10 +147,10 @@ function getSeverity(status) {
         </template>
       </Toolbar>
 
-      <DataTable ref="dt" v-model:selection="selectedProducts" :value="users" dataKey="id" :paginator="true" :rows="25"
+      <DataTable ref="dt" v-model:selection="selectedProducts" :value="users" dataKey="id" :paginator="true" :rows="15"
         :loading="isPending" :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[25, 50, 100]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users">
+        :rowsPerPageOptions="[15, 50, 100]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users">
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">Quản lý Tài Khoản</h4>

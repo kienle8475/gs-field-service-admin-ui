@@ -10,9 +10,9 @@
         </Toolbar>
 
         <DataTable :value="store_shifts" sortMode="single" :sortOrder="1" :loading="loadingStatus"
-            tableStyle="min-width: 50rem" :paginator="true" :rows="25" 
+            tableStyle="min-width: 50rem" :paginator="true" :rows="15" 
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[25, 50, 100]"
+            :rowsPerPageOptions="[15, 50, 100]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} outlets">
             <Column field="start_utc" header="Ngày Thực hiện">
                 <template #body="slotProps">
