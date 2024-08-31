@@ -230,32 +230,31 @@ const formatUTCToDDMMYYYY = (utcTimestamp) => {
 }
 
 const getGiftCountSeverity = (value) => {
-  if (parseInt(value) > 0) {
-    return "success";
-  }
-  return "secondary";
-}
+    if (parseInt(value) > 0) {
+        return 'success';
+    }
+    return 'secondary';
+};
 
 const getShiftStatus = (status) => {
-  return status ? "ĐÃ THỰC HIỆN" : "CHƯA THỰC HIỆN"
+    return status ? 'ĐÃ THỰC HIỆN' : 'CHƯA THỰC HIỆN';
 };
 
 const getShiftStatusSeverity = (status) => {
-  return status ? "info" : "danger"
+    return status ? 'info' : 'danger';
 };
 
 const getShiftSeverity = (session) => {
-  switch (session) {
-    case 'MORNING':
-      return 'success';
+    switch (session) {
+        case 'MORNING':
+            return 'success';
 
-    case 'AFTERNOON':
-      return 'warn';
+        case 'AFTERNOON':
+            return 'warn';
 
-    default:
-      return null;
-  }
+        default:
+            return null;
+    }
 };
-
 
 </script>
