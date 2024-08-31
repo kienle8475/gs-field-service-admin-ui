@@ -1761,7 +1761,8 @@ run-parallel@^1.1.9:
     moment "^2.30.1"
     primeicons "^6.0.1"
     primevue "^4.0.0"
-    sakai-vue "file:../../../Library/Caches/Yarn/v6/npm-sakai-vue-4.1.0-05dbfcd2-2466-41cf-99db-47e7f6f786a8-1725063105608/node_modules/sakai-vue"
+    sakai-vue "file:../../../Library/Caches/Yarn/v6/npm-sakai-vue-4.1.0-9e495a7e-9b9c-47aa-b882-f55b6253b613-1725126267661/node_modules/sakai-vue"
+    v-viewer "^3.0.13"
     vue "^3.4.34"
     vue-router "^4.4.3"
     vuex "^4.1.0"
@@ -1803,6 +1804,7 @@ signal-exit@^4.0.1:
   integrity sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -2003,6 +2005,18 @@ util-deprecate@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
+
+v-viewer@^3.0.13:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/v-viewer/-/v-viewer-3.0.13.tgz#de08227a01915f80275bc45875d1420f6ac44bc6"
+  integrity sha512-T8pgGzlF0ZCHVpD/32OKsD8MlpI6tqYP3n1XLcSjvGQMc0ABn8nJ4AumxvzAKVQrLRWtDTG6qRGAyCPCmi7ceA==
+  dependencies:
+    lodash-es "^4.17.21"
+
+viewerjs@^1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/viewerjs/-/viewerjs-1.11.6.tgz#19a1e78c15eba5a9fbbf34ebc5ab312d6e8932ed"
+  integrity sha512-TlhdSp2oEOLFXvEp4psKaeTjR5zBjTRcM/sHUN8PkV1UWuY8HKC8n7GaVdW5Xqnwdr/F1OmzLik1QwDjI4w/nw==
 
 vite@^5.3.1:
   version "5.3.5"
