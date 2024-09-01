@@ -6,7 +6,7 @@
       </template>
 
       <template #end>
-        <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
+        <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportExcel($event)" />
       </template>
     </Toolbar>
 

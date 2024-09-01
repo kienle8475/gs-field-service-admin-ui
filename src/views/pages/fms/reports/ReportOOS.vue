@@ -10,8 +10,8 @@
             <DatePicker v-model="reportDateRange" inputId="reportDateRange" selectionMode="range" :manualInput="false"
               showIcon fluid :showOnFocus="true" />
           </FloatLabel>
-          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportCSV($event)" />
-          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportCSV($event)" />
+          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportExcel($event)" />
+          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportExcel($event)" />
         </div>
       </template>
     </Toolbar>
@@ -22,7 +22,7 @@
       :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} report">
       <template #header>
-        <div class="flex flex-wrap ">
+        <div class="flex flex-wrap gap-4 justify-between">
           <div class="flex flex-wrap justify-start gap-2">
             <IconField>
               <InputIcon>
@@ -34,6 +34,7 @@
           <div class="flex flex-wrap justify-end gap-2">
             <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Thu Gọn" @click="collapseAll" />
+            <Button text icon="pi pi-refresh" label="Làm Mới Dữ Liệu" @click="refreshData" />
           </div>
         </div>
       </template>
@@ -66,12 +67,12 @@
                   <Column field="name" header="Tên sản phẩm"></Column>
                   <Column field="stockin" header="Tồn đầu">
                     <template #body="slotProps">
-                      <Tag :value="slotProps.data.stockin" :severity="getGiftCountSeverity(slotProps.data.stockin)" />
+                      <Tag :value="slotProps.data.stockin" :severity="getCountSeverity(slotProps.data.stockin)" />
                     </template>
                   </Column>
                   <Column field="stockout" header="Tồn cuối">
                     <template #body="slotProps">
-                      <Tag :value="slotProps.data.stockout" :severity="getGiftCountSeverity(slotProps.data.stockout)" />
+                      <Tag :value="slotProps.data.stockout" :severity="getCountSeverity(slotProps.data.stockout)" />
                     </template>
                   </Column>
                 </DataTable>
@@ -83,12 +84,12 @@
                   <Column field="name" header="Tên sản phẩm"></Column>
                   <Column field="stockin" header="Tồn đầu">
                     <template #body="slotProps">
-                      <Tag :value="slotProps.data.stockin" :severity="getGiftCountSeverity(slotProps.data.stockin)" />
+                      <Tag :value="slotProps.data.stockin" :severity="getCountSeverity(slotProps.data.stockin)" />
                     </template>
                   </Column>
                   <Column field="stockout" header="Tồn cuối">
                     <template #body="slotProps">
-                      <Tag :value="slotProps.data.stockout" :severity="getGiftCountSeverity(slotProps.data.stockout)" />
+                      <Tag :value="slotProps.data.stockout" :severity="getCountSeverity(slotProps.data.stockout)" />
                     </template>
                   </Column>
                 </DataTable>
@@ -117,6 +118,7 @@ const shifts = ref();
 const shiftstrans = ref([]);
 const expandedRows = ref({});
 const reportDateRange = ref();
+const toast = useToast()
 
 const dt = ref();
 const filters = ref(
@@ -180,7 +182,6 @@ const transformData = (data) => {
         };
       });
     const status = (workingShifts.length > 0)
-    console.log(workingShifts)
     return {
       date: item.created_utc,
       shift: item.session,
@@ -192,16 +193,14 @@ const transformData = (data) => {
   });
 }
 
-function getMax(values) {
-  let max = undefined;
+const exportExcel = () => {
+  return 0
+}
 
-  for (let value of values) {
-    if (typeof value === 'number' && (max === undefined || value > max)) {
-      max = value;
-    }
-  }
-
-  return max;
+const refreshData = () => {
+  shiftstrans.value = [];
+  refetch()
+  toast.add({ severity: 'success', summary: 'Thành công ', detail:"Dữ liệu đã được cập nhật", life: 3000 });
 }
 
 const onRowExpand = (event) => {
@@ -229,7 +228,7 @@ const formatUTCToDDMMYYYY = (utcTimestamp) => {
 
 }
 
-const getGiftCountSeverity = (value) => {
+const getCountSeverity = (value) => {
     if (parseInt(value) > 0) {
         return 'success';
     }

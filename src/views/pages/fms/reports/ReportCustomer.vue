@@ -10,8 +10,8 @@
             <DatePicker v-model="reportDateRange" inputId="reportDateRange" selectionMode="range" :manualInput="false"
               showIcon fluid :showOnFocus="true" />
           </FloatLabel>
-          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportCSV($event)" />
-          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportCSV($event)" />
+          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportExcel($event)" />
+          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportExcel($event)" />
         </div>
       </template>
     </Toolbar>
@@ -22,7 +22,7 @@
       :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} report">
       <template #header>
-        <div class="flex flex-wrap ">
+        <div class="flex flex-wrap gap-4 justify-between">
           <div class="flex flex-wrap justify-start gap-2">
             <IconField>
               <InputIcon>
@@ -34,6 +34,7 @@
           <div class="flex flex-wrap justify-end gap-2">
             <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Thu Gọn" @click="collapseAll" />
+            <Button text icon="pi pi-refresh" label="Làm Mới Dữ Liệu" @click="refreshData" />
           </div>
         </div>
       </template>
@@ -57,6 +58,10 @@
             <Column field="bill_id" header="Mã Bill"></Column>
             <Column field="customer_name" header="Tên Khách Hàng"></Column>
             <Column field="customer_phone" header="Số Điện Thoại"></Column>
+            <Column field="otp_code" header="OTP">
+              <template #body="slotProps">
+                <Tag :value="slotProps.data.otp_code" severity="secondary" />
+              </template></Column>
             <Column field="gift_type" header="Loại Quà">
               <template #body="slotProps">
                 <Tag :value="slotProps.data.gift_type" :severity="getGiftSeverity(slotProps.data.gift_type)" />
@@ -101,18 +106,26 @@
 <script setup>
 import store from '@/store';
 import axios from 'axios';
+import moment from 'moment';
 
 import { useQuery } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { useToast } from "primevue/usetoast";
+import { ExportXLSX } from '@/service/ExportXLSX';
+
 
 import 'viewerjs/dist/viewer.css'
+import stbruby_export_data_template from '@/assets/templates/stbruby_export_data_template-Gift.xlsx'
 
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 const shifts = ref();
 const shiftstrans = ref([]);
 const expandedRows = ref({});
+const reportDateRange = ref();
+const toast = useToast()
+
 const filters = ref(
   {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -156,6 +169,55 @@ const transformData = (dt) => {
   })
 }
 
+const refreshData = () => {
+  shiftstrans.value = [];
+  refetch()
+  toast.add({ severity: 'success', summary: 'Thành công ', detail:"Dữ liệu đã được cập nhật", life: 3000 });
+}
+
+const flatMapObject = (obj) => {
+  return obj.gifts.map((item) => ({
+    id: obj.id,
+    date: formatUTCToDDMMYYYY(obj.date),
+    session: obj.shift,
+    outlet: obj.store,
+    bill: item.bill_id,
+    time: formatUTC7Time(item.created_utc),
+    customer_name: item.customer_name,
+    customer_phone: item.customer_phone,
+    otp_code: item.otp_code || "",
+    sku1: item.products[0].count,
+    sku2: item.products[1].count,
+    sku3: item.products[2].count,
+    sku4: item.products[3].count,
+    gift_type: item.gift_type,
+    scheme: item.gift_scheme,
+    gift: item.reward_gift,
+    bill_img: item.bill_image_url,
+    customer_img: item.reward_image_url
+  }));
+}
+
+const transformExportData = (data) => {
+  const shiftFlatten = []
+  data.forEach((item, index) => {
+    shiftFlatten.push(flatMapObject(item))
+  });
+  return shiftFlatten.flat(Infinity)
+}
+
+const exportExcel = () => {
+  const dataExport = transformExportData(shiftstrans.value);
+  fetch(stbruby_export_data_template)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => {
+      ExportXLSX.exportExcel(dataExport, arrayBuffer, "Gift", "Report Gift")
+    })
+    .catch(error => {
+      console.error('Error loading XLSX Template file:', error);
+    });
+}
+
 const formatUTCToDDMMYYYY = (utcTimestamp) => {
   const date = new Date(utcTimestamp);
   const day = date.getDate().toString().padStart(2, '0');
@@ -163,6 +225,12 @@ const formatUTCToDDMMYYYY = (utcTimestamp) => {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 
+}
+
+const formatUTC7Time = (utcTimestamp) => {
+
+const utc7Timestamp = utcTimestamp ? moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss') : "";
+return utc7Timestamp;
 }
 
 const onRowExpand = (event) => {

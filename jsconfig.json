@@ -9,5 +9,7 @@
     "exclude": [
         "node_modules",
         "dist"
-    ]
+    ],
+    "module": "esnext",
+    "moduleResolution": "Node",
 }

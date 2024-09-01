@@ -10,8 +10,8 @@
             <DatePicker v-model="reportDateRange" inputId="reportDateRange" selectionMode="range" :manualInput="false"
               showIcon fluid :showOnFocus="true" />
           </FloatLabel>
-          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportCSV($event)" />
-          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportCSV($event)" />
+          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportExcel($event)" />
+          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportExcel($event)" />
         </div>
       </template>
     </Toolbar>
@@ -22,7 +22,7 @@
       :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} report">
       <template #header>
-        <div class="flex flex-wrap ">
+        <div class="flex flex-wrap gap-4 justify-between">
           <div class="flex flex-wrap justify-start gap-2">
             <IconField>
               <InputIcon>
@@ -34,6 +34,7 @@
           <div class="flex flex-wrap justify-end gap-2">
             <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Thu Gọn" @click="collapseAll" />
+            <Button text icon="pi pi-refresh" label="Làm Mới Dữ Liệu" @click="refreshData" />
           </div>
         </div>
       </template>
@@ -146,6 +147,8 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { useToast } from 'primevue/usetoast'
+
 
 import 'viewerjs/dist/viewer.css'
 
@@ -155,6 +158,7 @@ const shifts = ref();
 const shiftstrans = ref([]);
 const expandedRows = ref({});
 const reportDateRange = ref();
+const toast = useToast();
 const filters = ref(
   {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -210,6 +214,11 @@ const transformData = (data) => {
   });
 }
 
+const refreshData = () => {
+  shiftstrans.value = [];
+  refetch()
+  toast.add({ severity: 'success', summary: 'Thành công ', detail:"Dữ liệu đã được cập nhật", life: 3000 });
+}
 
 const onRowExpand = (event) => {
   // toast.add({ severity: 'info', summary: 'Expanded', detail: event.data.name, life: 3000 });

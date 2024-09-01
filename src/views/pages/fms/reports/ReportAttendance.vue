@@ -10,8 +10,8 @@
             <DatePicker v-model="reportDateRange" inputId="reportDateRange" selectionMode="range" :manualInput="false"
               showIcon fluid :showOnFocus="true" />
           </FloatLabel>
-          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportCSV($event)" />
-          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportCSV($event)" />
+          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportExcel($event)" />
+          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportExcel($event)" />
         </div>
       </template>
     </Toolbar>
@@ -22,8 +22,8 @@
       :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} report">
       <template #header>
-        <div class="flex flex-wrap ">
-          <div class="flex flex-wrap justify-start gap-2">
+        <div class="flex flex-wrap gap-4 justify-between">
+          <div class="flex flex-wrap gap-2">
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
@@ -31,9 +31,11 @@
               <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
             </IconField>
           </div>
-          <div class="flex flex-wrap justify-end gap-2">
+          <div class="flex flex-wrap gap-2">
             <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Thu Gọn" @click="collapseAll" />
+            <Button text icon="pi pi-refresh" label="Làm Mới Dữ Liệu" @click="refreshData" />
+
           </div>
         </div>
       </template>
@@ -112,9 +114,12 @@ import moment from 'moment';
 import { useQuery } from '@tanstack/vue-query';
 import { ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import { useToast } from 'primevue/usetoast'
+import { useToast } from 'primevue/usetoast';
+import { ExportXLSX } from '@/service/ExportXLSX';
 
 import 'viewerjs/dist/viewer.css'
+
+import stbruby_export_data_template from '@/assets/templates/stbruby_export_data_template-Attendance.xlsx'
 
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -141,6 +146,50 @@ const { isPending, isError, data, error, refetch } = useQuery({
   },
 
 });
+
+const refreshData = () => {
+  shifts.value = []
+  refetch()
+  toast.add({ severity: 'success', summary: 'Thành công ', detail: "Dữ liệu đã được cập nhật", life: 3000 });
+}
+
+const flatMapObject = (obj) => {
+  return obj.working_shifts.map((item) => ({
+    id: obj._id,
+    date: formatUTCToDDMMYYYY(obj.start_utc),
+    session: obj.session,
+    outlet: obj.store.name,
+    start_utc: formatUTC7Time(obj.start_utc),
+    end_utc: formatUTC7Time(obj.end_utc),
+    user: item.user.username,
+    time_in: formatUTC7Time(item.check_in?.time_utc) || '',
+    img_in: item.check_in?.image_url || '',
+    gps_in: item.check_in?.gps  || '',
+    time_out: formatUTC7Time(item.check_out?.time_utc) || '',
+    img_out: item.check_out?.image_url || '',
+    gps_out: item.check_out?.gps  || ''
+  }));
+}
+
+const transformExportData = (data) => {
+  const shiftFlatten = []
+  data.forEach((item, index) => {
+    shiftFlatten.push(flatMapObject(item))
+  });
+  return shiftFlatten.flat(Infinity)
+}
+
+const exportExcel = () => {
+  const dataExport = transformExportData(shifts.value);
+  fetch(stbruby_export_data_template)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => {
+      ExportXLSX.exportExcel(dataExport, arrayBuffer, "Attendance", "Report Attendance")
+    })
+    .catch(error => {
+      console.error('Error loading XLSX Template file:', error);
+    });
+}
 
 const formatUTC7Time = (utcTimestamp) => {
 
@@ -194,9 +243,6 @@ const getShiftSeverity = (shifts) => {
   return shifts.length > 0 ? "info" : "danger"
 }
 
-const exportCSV = () => {
-  dt.value.exportCSV();
-}
 
 </script>
 

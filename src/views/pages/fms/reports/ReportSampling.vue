@@ -10,8 +10,8 @@
             <DatePicker v-model="reportDateRange" inputId="reportDateRange" selectionMode="range" :manualInput="false"
               showIcon fluid :showOnFocus="true" />
           </FloatLabel>
-          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportCSV($event)" />
-          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportCSV($event)" />
+          <Button label="Filter" icon="pi pi-search" severity="warn" @click="exportExcel($event)" />
+          <Button label="Export" icon="pi pi-file-excel" severity="primary" @click="exportExcel($event)" />
         </div>
       </template>
     </Toolbar>
@@ -22,7 +22,7 @@
       :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} report">
       <template #header>
-        <div class="flex flex-wrap ">
+        <div class="flex flex-wrap gap-4 justify-between">
           <div class="flex flex-wrap justify-start gap-2">
             <IconField>
               <InputIcon>
@@ -34,6 +34,7 @@
           <div class="flex flex-wrap justify-end gap-2">
             <Button text icon="pi pi-plus" label="Mở Rộng" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Thu Gọn" @click="collapseAll" />
+            <Button text icon="pi pi-refresh" label="Làm Mới Dữ Liệu" @click="refreshData" />
           </div>
         </div>
       </template>
@@ -86,12 +87,16 @@
 <script setup>
 import store from '@/store';
 import axios from 'axios';
+import moment from 'moment';
 
 import { useQuery } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { useToast } from 'primevue/usetoast'
+import { ExportXLSX } from '@/service/ExportXLSX';
 
 import 'viewerjs/dist/viewer.css'
+import stbruby_export_data_template from '@/assets/templates/stbruby_export_data_template-Sampling.xlsx'
 
 const APIUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -99,6 +104,7 @@ const shifts = ref();
 const shiftstrans = ref([]);
 const expandedRows = ref({});
 const reportDateRange = ref();
+const toast = useToast();
 
 const filters = ref(
   {
@@ -137,16 +143,59 @@ const transformData = (dt) => {
           store: item.store.name,
           gifts: giftitems
         }
-        // console.log(item._id)
         shiftstrans.value.push(d)
       }
     }
   })
 }
 
+const refreshData = () => {
+  shiftstrans.value = [];
+  refetch()
+  toast.add({ severity: 'success', summary: 'Thành công ', detail:"Dữ liệu đã được cập nhật", life: 3000 });
+}
+
+const flatMapObject = (obj) => {
+  return obj.gifts.map((item) => ({
+    id: obj.id,
+    date: formatUTCToDDMMYYYY(obj.date),
+    session: obj.shift,
+    outlet: obj.store,
+    time: formatUTC7Time(item.created_utc),
+    customer_name: item.customer_name,
+    customer_phone: item.customer_phone,
+    otp_code: item.otp_code || "",
+    sampling_type: item.sampling_type,
+    gift: item.reward_gift,
+    customer_img: item.reward_image_url,
+    post_social_image: item.post_social_image_url
+  }));
+}
+
+const transformExportData = (data) => {
+  const shiftFlatten = []
+  data.forEach((item, index) => {
+    shiftFlatten.push(flatMapObject(item))
+  });
+  return shiftFlatten.flat(Infinity)
+}
+
+const exportExcel = () => {
+  const dataExport = transformExportData(shiftstrans.value);
+  fetch(stbruby_export_data_template)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => {
+      ExportXLSX.exportExcel(dataExport, arrayBuffer, "Sampling", "Report Sampling")
+    })
+    .catch(error => {
+      console.error('Error loading XLSX Template file:', error);
+    });
+}
+
 const onRowExpand = (event) => {
   // toast.add({ severity: 'info', summary: 'Expanded', detail: event.data.name, life: 3000 });
 };
+
 const onRowCollapse = (event) => {
   // toast.add({ severity: 'success', summary: 'Collapsed', detail: event.data.name, life: 3000 });
 };
@@ -166,6 +215,12 @@ const formatUTCToDDMMYYYY = (utcTimestamp) => {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 
+}
+
+const formatUTC7Time = (utcTimestamp) => {
+
+const utc7Timestamp = utcTimestamp ? moment.utc(utcTimestamp).utcOffset(7).format('HH:mm:ss') : "";
+return utc7Timestamp;
 }
 
 const getSeverity = (session) => {

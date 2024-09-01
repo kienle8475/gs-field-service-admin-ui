@@ -102,8 +102,8 @@ function createId() {
     return id;
 }
 
-function exportCSV() {
-    dt.value.exportCSV();
+function exportExcel() {
+    dt.value.exportExcel();
 }
 
 function confirmDeleteSelected() {
@@ -144,7 +144,7 @@ function getStatusLabel(status) {
                 </template>
 
                 <template #end>
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
+                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportExcel($event)" />
                 </template>
             </Toolbar>
 

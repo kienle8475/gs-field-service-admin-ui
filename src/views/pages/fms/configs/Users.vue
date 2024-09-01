@@ -124,8 +124,8 @@ function disableUser() {
   })
 }
 
-function exportCSV() {
-  dt.value.exportCSV();
+function exportExcel() {
+  dt.value.exportExcel();
 }
 
 function getSeverity(status) {
@@ -143,7 +143,7 @@ function getSeverity(status) {
         </template>
 
         <template #end>
-          <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
+          <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportExcel($event)" />
         </template>
       </Toolbar>
 

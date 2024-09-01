@@ -5,7 +5,7 @@
                 <Button label="Tạo Ca Làm" icon="pi pi-plus" severity="warn" class="mr-2" @click="openNew" />
             </template>
             <template #end>
-                <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportCSV($event)" />
+                <Button label="Export" icon="pi pi-upload" severity="primary" @click="exportExcel($event)" />
             </template>
         </Toolbar>
 
