@@ -17,6 +17,8 @@
         "primeicons": "^6.0.1",
         "primevue": "^4.0.0",
         "sakai-vue": "file:",
+        "v-viewer": "^3.0.13",
+        "viewerjs": "^1.11.6",
         "vue": "^3.4.34",
         "vue-router": "^4.4.3",
         "vuex": "^4.1.0"

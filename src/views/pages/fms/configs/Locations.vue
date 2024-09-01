@@ -12,9 +12,9 @@
 
     <DataTable :value="outlets" rowGroupMode="subheader" groupRowsBy="province_details" sortMode="single"
       sortField="province_details" :sortOrder="1" :loading="loadingStatus" tableStyle="min-width: 50rem"
-      :paginator="true" :rows="25"
+      :paginator="true" :rows="15"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-      :rowsPerPageOptions="[25, 50, 100]"
+      :rowsPerPageOptions="[15, 50, 100]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} outlets">
       <Column field="province_details" header="Tỉnh/Thành Phố"></Column>
       <Column field="name" header="Tên Outlet" style="min-width: 200px"></Column>

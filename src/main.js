@@ -6,6 +6,7 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import { VueQueryPlugin, QueryClient, VUE_QUERY_CLIENT } from '@tanstack/vue-query';
+import VueViewer from 'v-viewer'
 
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
@@ -13,15 +14,6 @@ import '@/assets/tailwind.css';
 import store from './store';
 
 const app = createApp(App);
-
-export const queryClient = {
-    install: (app, options) => {
-      const queryClient = new QueryClient(options);
-      app.provide(VUE_QUERY_CLIENT, queryClient)
-    }
-}
-app.use(VueQueryPlugin);
-app.use(queryClient);
 
 app.use(PrimeVue, {
     theme: {
@@ -31,11 +23,6 @@ app.use(PrimeVue, {
         }
     }
 });
-app.use(ToastService);
-app.use(ConfirmationService);
-
-app.use(router);
-app.use(store);
 
 router.beforeEach((to, from, next) => {
     // if any of the routes in ./router.js has a meta named 'requiresAuth: true'
@@ -60,5 +47,12 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
+
+app.use(VueViewer);
+app.use(VueQueryPlugin);
+app.use(ToastService);
+app.use(ConfirmationService);
+app.use(router);
+app.use(store);
 
 app.mount('#app');
